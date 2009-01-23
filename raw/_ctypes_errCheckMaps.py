@@ -36,6 +36,8 @@ mustErrorCheck = set([
     'glGetTexImage', 'glGetCompressedTexImage',
     'glTexImage', 'glTexSubImage', 
     'glCopyTexImage', 'glCopyTexSubImage',
-    'glCompressedTexImage', 'glCompressedTexSubImage'
+    'glCompressedTexImage', 'glCompressedTexSubImage',
+
+    'glBindTexture', 'glBindBuffer', 'glBindAttribLocation',
     ])
 
