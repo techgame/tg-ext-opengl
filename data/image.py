@@ -88,6 +88,9 @@ class ImageTexture(Texture):
 
     def send(self, sgo=None):
         image = self.image
+        if image.size != tuple(self.texSize):
+            self.release()
+
         self.bind()
         dataFormat = self.dataFormat
         dataType = self.modeFormatMap[image.mode][1]
