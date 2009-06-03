@@ -457,6 +457,8 @@ class TextureImage3D(TextureImageBasic):
 
 class Texture(object):
     texParams = []
+    texPostParams = []
+
     targetMap = {
         '1d': gl.GL_TEXTURE_1D, 'proxy-1d': gl.GL_PROXY_TEXTURE_1D, 
         '2d': gl.GL_TEXTURE_2D, 'proxy-2d': gl.GL_PROXY_TEXTURE_2D, 
@@ -562,6 +564,7 @@ class Texture(object):
 
             self.texture_id = texture_id
             self.set(self.texParams)
+            self.set(self.texPostParams)
 
         return target, texture_id
 

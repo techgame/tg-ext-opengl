@@ -45,6 +45,8 @@ class ImageTexture(Texture):
     texParams = Texture.texParams + [
             ('target', ('rect', '2d')),
             ('wrap', gl.GL_CLAMP_TO_EDGE),
+            ]
+    texPostParams = Texture.texPostParams + [
             ('genMipmaps', True),
             ('magFilter', gl.GL_LINEAR),
             ('minFilter', gl.GL_LINEAR),
@@ -60,7 +62,9 @@ class ImageTexture(Texture):
 
     box = Box.property(publish='box')
 
-    def __init__(self, image=None, format=True):
+    def __init__(self, image=None, format=True, texParams=None):
+        if texParams is not None:
+            self.texParams = list(texParams)
         if image is not None:
             self.setImage(image, format)
 
