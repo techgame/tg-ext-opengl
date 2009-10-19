@@ -13,7 +13,7 @@
 import unittest
 
 from numpy import allclose
-from TG.openGL.data import ColorArray, Color
+from TG.ext.openGL.data import ColorArray, Color
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 

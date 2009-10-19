@@ -14,7 +14,7 @@ import unittest
 
 from numpy import allclose
 
-from TG.openGL import data
+from TG.ext.openGL import data
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 

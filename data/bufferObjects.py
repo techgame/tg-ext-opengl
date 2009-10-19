@@ -14,7 +14,7 @@ from ctypes import pythonapi, cast, byref, c_void_p
 
 import numpy
 
-from TG.openGL.raw import gl
+from TG.ext.openGL.raw import gl
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Constants / Variiables / Etc. 

@@ -106,7 +106,7 @@ xmlSkin = XMLSkin("""<?xml version='1.0'?>
 
                         #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-                        from TG.openGL.raw import gl, glu
+                        from TG.ext.openGL.raw import gl, glu
 
                         obj.SetCurrent()
                         gl.glClearColor(0.0, 0.0, 0.0, 0.0)

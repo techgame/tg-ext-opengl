@@ -13,7 +13,7 @@
 import unittest
 
 from numpy import allclose
-from TG.openGL.data import VertexArray, Vertex
+from TG.ext.openGL.data import VertexArray, Vertex
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 

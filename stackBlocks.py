@@ -12,8 +12,8 @@
 
 from contextlib import contextmanager
 
-from TG.openGL.raw import gl
-from TG.openGL.raw.errors import GLError
+from TG.ext.openGL.raw import gl
+from TG.ext.openGL.raw.errors import GLError
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 

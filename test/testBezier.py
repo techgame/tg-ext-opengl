@@ -13,7 +13,7 @@
 import unittest
 
 from numpy import allclose
-from TG.openGL.data import Color, bezier
+from TG.ext.openGL.data import Color, bezier
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 
