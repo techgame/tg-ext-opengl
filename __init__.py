@@ -14,3 +14,19 @@
 #~ Definitions 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+def printGLInfo(out=None, incExtensions=False):
+    from .raw import gl
+
+    print >>out, 'GL Version: ', gl.glGetString(gl.GL_VERSION)
+    print >>out, '    Vendor: ', gl.glGetString(gl.GL_VENDOR)
+    print >>out, '  Renderer: ', gl.glGetString(gl.GL_RENDERER)
+    if incExtensions:
+        ext = gl.glGetString(gl.GL_EXTENSIONS).split()
+        print >>out, 'GL Extensions:', len(ext),
+        for i, e in enumerate(ext):
+            if i % 2 == 0:
+                print >> out
+                print >> out, "   ",
+            print >>out, "%-40s" % (e,),
+        print
+
