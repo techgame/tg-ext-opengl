@@ -75,6 +75,11 @@ if libAGLPath:
     libAGL = ctypes.cdll.LoadLibrary(libAGLPath)
 else: libAGL = None
 
+libOpenGLPath = ctypes.util.find_library("OpenGL")
+if libOpenGLPath:
+    libOpenGL = ctypes.cdll.LoadLibrary(libOpenGLPath)
+else: libOpenGL = None
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ Definitions 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,9 +108,11 @@ def getCGLContextAndFormat():
     quicktime"""
 
     # getting cglContext and cglPixel format to initialize the movie from
-    aglCtx = libAGL.aglGetCurrentContext()
-    cglCtx = c_void_p()
-    libAGL.aglGetCGLContext(aglCtx, byref(cglCtx))
+    cglCtx = libOpenGL.CGLGetCurrentContext()
+    if not cglCtx:
+        cglCtx = c_void_p()
+        aglCtx = libAGL.aglGetCurrentContext()
+        r = libAGL.aglGetCGLContext(aglCtx, byref(cglCtx))
 
     aglAttribs = [
         AGL_RGBA, 
