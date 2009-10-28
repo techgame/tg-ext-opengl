@@ -59,6 +59,10 @@ class ImageTexture(Texture):
         'L': (gl.GL_LUMINANCE, gl.GL_UNSIGNED_BYTE),
         'A': (gl.GL_ALPHA, gl.GL_UNSIGNED_BYTE),
         }
+    modeConversionMap = {
+        "P": "RGB",
+        "CMYK": "RGB",
+    }
 
     box = Box.property(publish='box')
 
@@ -72,8 +76,9 @@ class ImageTexture(Texture):
     def getImage(self):
         return self._image
     def setImage(self, image, format=True):
-        if image.mode == 'P':
-            image = image.convert('RGBA')
+        mode = self.modeConversionMap.get(image.mode)
+        if mode is not None:
+            image = image.convert(mode)
 
         if format is True:
             self.format = self.modeFormatMap[image.mode][0]
