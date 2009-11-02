@@ -79,7 +79,7 @@ def scrubNamespace(namespace, hostNamespace):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 if os.name == "nt":
-    def find_library(name, executable_path=sys.exec_prefix):
+    def find_library(name, executable_path=os.path.dirname(sys.executable)):
         # See MSDN for the REAL search order.
         paths = [os.path.join(executable_path, 'bin'), executable_path] 
         paths += os.environ['PATH'].split(os.pathsep)
@@ -102,7 +102,7 @@ if os.name == "posix" and sys.platform == "darwin":
         '%(path)s%(name)s.dylib',
         '%(path)s%(name)s.framework/%(name)s']
 
-    def find_library(name, executable_path=sys.exec_prefix):
+    def find_library(name, executable_path=os.path.dirname(sys.executable)):
         paths = ['', '@executable_path/../Frameworks/', executable_path]
         
 
