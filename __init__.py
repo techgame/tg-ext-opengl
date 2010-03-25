@@ -30,3 +30,19 @@ def printGLInfo(out=None, incExtensions=False):
             print >>out, "%-40s" % (e,),
         print
 
+def gatherGLInfo(incExtensions=True, asList=True):
+    from .raw import gl
+
+    rec = {
+        'GL_VERSION': gl.glGetString(gl.GL_VERSION),
+        'GL_VENDOR': gl.glGetString(gl.GL_VENDOR),
+        'GL_RENDERER': gl.glGetString(gl.GL_RENDERER),}
+
+    if incExtensions:
+        ext = gl.glGetString(gl.GL_EXTENSIONS)
+        if asList:
+            ext = ext.split()
+        rec['GL_EXTENSIONS'] = ext
+
+    return {'OpenGL':rec}
+
