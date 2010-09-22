@@ -10,6 +10,9 @@
 #~ Imports 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+import functools
+import itertools
+
 from .raw import gl, glu
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -57,11 +60,11 @@ class NameSelector(Selector):
 
     def finish(self, incZDepth=False):
         hitRecords = gl.glRenderMode(gl.GL_RENDER)
-        selection = self._processHits(hitRecords, self._namedItems, incZDepth)
+        selection = self._processHits(hitRecords, self.getNamedItem, incZDepth)
         self._namedItems.clear()
         return selection
 
-    def _processHits(self, hitRecords, namedItems, incZDepth=False):
+    def _processHits(self, hitRecords, getNamedItem, incZDepth=False):
         offset = 0
         buffer = self._buffer
         result = []
@@ -70,7 +73,7 @@ class NameSelector(Selector):
             names = list(buffer[offset+3:offset+3+nameRecords])
             offset += 3+nameRecords
 
-            namedHit = [namedItems[n] for n in names]
+            namedHit = [getNamedItem(n) for n in names]
             if incZDepth:
                 namedHit = ((minZ, maxZ), namedHit)
             result.append(namedHit)
@@ -78,13 +81,18 @@ class NameSelector(Selector):
 
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    def load(self, *items):
+    def getNamedItem(self, n):
+        return self._namedItems[n]
+    def addItems(self, items):
         n = id(items[0])
         self._namedItems[n] = items
+        return n
+
+    def load(self, *items):
+        n = self.addItems(items)
         gl.glLoadName(n)
     def push(self, *items):
-        n = id(items[0])
-        self._namedItems[n] = items
+        n = self.addItems(items)
         gl.glPushName(n)
     def pop(self):
         gl.glPopName()
@@ -104,8 +112,84 @@ class NameSelector(Selector):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class ColorSelector(Selector):
-    """Runs a selection pass using the color buffer to allow for fragments to
-    affect what gets picked.  This enables textures (and alpha) to affect the
-    shape of objects."""
+class StencilSelector(Selector):
+    def __init__(self):
+        Selector.__init__(self)
+        self._namedItems = {}
+        self._nameStack = []
+
+    @classmethod
+    def checkViable(klass):
+        isViable = self._isViable
+        if isViable is not None:
+            return isViable
+
+        v = gl.GLint(0)
+        gl.glGetIntegerv(gl.GL_STENCIL_BITS, gl.byref(v))
+        v = v.value
+        isViable = (v < 8)
+        if not isViable:
+            print 'WARNING: need at least 8 stencil bits, only found', v
+            
+        return isViable
+
+    def start(self):
+        self._namedItems.clear()
+        self._nameStack[:] = []
+        self.nextId = itertools.count(0x1).next
+
+        self._setCurrentName = functools.partial(gl.glStencilFunc, gl.GL_ALWAYS, mask=-1)
+
+        gl.glClearStencil(0)
+        gl.glClear(gl.GL_STENCIL_BUFFER_BIT)
+
+        gl.glStencilOp(gl.GL_KEEP, gl.GL_KEEP, gl.GL_REPLACE)
+        self._setCurrentName(0)
+        gl.glEnable(gl.GL_STENCIL_TEST)
+
+    def finish(self):
+        sel = []
+        gl.glDisable(gl.GL_STENCIL_TEST)
+
+        (x,y),(w,h) = self.pickRect
+        if x>0 and y>0:
+            vbuf = (gl.GLuint * max(1, w*h))(0)
+            gl.glReadPixels(int(x),int(y),int(w),int(h),
+                gl.GL_STENCIL_INDEX, gl.GL_UNSIGNED_INT, vbuf)
+
+            sel = self._processHits(vbuf, self.getNamedItem)
+
+        self._namedItems.clear()
+        self._nameStack[:] = []
+        return sel
+
+    def _processHits(self, vbuf, getNamedItem):
+        r = []
+        for hit in vbuf:
+            if hit>0:
+                r.append([getNamedItem(hit)])
+        return r
+
+    def pickMatrix(self, pos, size, vpbox):
+        self.pickRect = pos,size
+
+    def getNamedItem(self, n):
+        return self._namedItems[n]
+    def addItems(self, items):
+        n = self.nextId()
+        self._namedItems[n] = items
+        return n
+
+    def load(self, *items):
+        n = self.addItems(items)
+        self._setCurrentName(n)
+
+    def push(self, *items):
+        n = self.addItems(items)
+        self._nameStack.append(n)
+        self._setCurrentName(n)
+
+    def pop(self):
+        n = self._nameStack.pop()
+        self._setCurrentName(n)
 
