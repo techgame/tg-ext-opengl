@@ -63,14 +63,17 @@ class DrawArrayView(object):
         self._glsingle = partial(gl.glDrawArrays, glid_mode, arr[0], arr[1])
         if arr.ndim > 1:
             self._glgroup = partial(gl.glMultiDrawArrays, glid_mode, arr[0].ctypes, arr[1].ctypes, arr.shape[1])
-        else: 
-            self._glgroup = self._glsingle
+        else: self._glgroup = self._glsingle
         return self
 
     def one(self):
         self._glsingle()
     def send(self):
         self._glgroup()
+
+    def _glNoOP(self): pass
+    _glsingle = _glNoOP
+    _glgroup = _glNoOP
 
 _registerArrayView(DrawArrayView)
 

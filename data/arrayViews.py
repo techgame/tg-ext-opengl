@@ -98,11 +98,15 @@ class ArrayView(object):
             self._glsend = partial(glgroup_raw, glc_dim, glid_type, arr.strides[-2], arr.ctypes)
             self._glenable = partial(gl.glEnableClientState, self.glid_kind)
             self._gldisable = partial(gl.glDisableClientState, self.glid_kind)
+        elif glc_dim == 0: 
+            self._glsend = self._glNoOP
+            self._glenable = self._glNoOP
+            self._gldisable = self._glNoOP
         else: 
             glsingle_raw = getattr(gl, self.glfn_single % dict(dim=glc_dim, fmt=glc_fmt))
             self._glsend = partial(glsingle_raw, arr.ctypes)
-            self._glenable = lambda: None
-            self._gldisable = lambda: None
+            self._glenable = self._glNoOP
+            self._gldisable = self._glNoOP
 
     def enable(self): 
         self._glenable()
@@ -110,6 +114,11 @@ class ArrayView(object):
         self._gldisable()
     def send(self):
         self._glsend()
+
+    def _glNoOP(self): pass
+    _glenable = _glNoOP
+    _gldisable = _glNoOP
+    _glsend = _glNoOP
 
 _registerArrayView(ArrayView)
 
