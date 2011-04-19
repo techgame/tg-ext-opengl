@@ -981,28 +981,10 @@ class Texture(object):
     def validTargets(klass, targetList=None):
         supported = klass._targetMap_supported
         if supported is None:
-            supported = {}
-            klass._targetMap_supported = supported
+            klass._targetMap_supported = supported = {}
+            klass._targetMap_unsupported = unsupported = {}
+            klass.exploreValidTargets(supported, unsupported)
 
-            for alias, target in klass.targetMap.items():
-                try: # clear the errors
-                    gl.glIsEnabled(gl.GL_TEXTURE_2D)
-                except glErrors.GLError, e: pass
-
-                try: 
-                    gl.glIsEnabled(target)
-                except glErrors.GLError, e: 
-                    try: # clear the errors
-                        gl.glIsEnabled(gl.GL_TEXTURE_2D)
-                    except glErrors.GLError, e: pass
-                    continue
-
-                supported[alias] = target
-                supported[target] = target
-
-            print
-            print '  Supported GL Texture Enumerants:', ', '.join(hex(e) for e in set(supported.values()))
-            print
         if targetList is None:
             return supported
 
@@ -1011,4 +993,19 @@ class Texture(object):
                         for e in (v if isinstance(v, (tuple, list)) else [v]) 
                             if e in supported)
     _targetMap_supported = None
+
+    @classmethod
+    def exploreValidTargets(klass, supported, unsupported):
+        # clear any errors
+        gl.glGetError()
+        for alias, target in klass.targetMap.items():
+            if gl.glIsEnabled(target):
+                supported[alias] = target
+                supported[target] = target
+            else:
+                unsupported[alias] = target
+                unsupported[target] = target
+
+        # clear any errors
+        gl.glGetError()
 

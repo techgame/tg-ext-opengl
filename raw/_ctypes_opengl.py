@@ -7,7 +7,7 @@ import re
 import ctypes
 from ctypes import *
 import _ctypes_support
-from ._ctypes_errCheckMaps import noErrorCheck, mustErrorCheck
+from ._ctypes_errCheckMaps import noErrorCheck, boolErrorCheck, mustErrorCheck
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #~ CTypes Overrides 
@@ -65,15 +65,15 @@ getNameToFirstDigit = re.compile(r'(gl[A-Za-z_]+)\d?').match
 def fnBaseName(fn):
     return getNameToFirstDigit(fn.__name__).groups()[0]
 
-def mustErrorCheckFn(fn):
-    return name not in mustErrorCheck
-
 glGetError = None
 
 def glNullCheckError(result, func, args):
     err = None
     print '=== %s%r -%r-> %r ' % (func.__name__, args, err, result)
     return result
+def glCheckErrorBool(result, func, args):
+    err = glGetError()
+    return err == 0
 def glCheckError(result, func, args):
     err = glGetError()
     #print '+++ %s%r -%r-> %r ' % (func.__name__, args, err, result)
@@ -91,6 +91,8 @@ def _getErrorCheckForFn(fn):
         return None
     elif name in mustErrorCheck:
         return glCheckError
+    elif name in boolErrorCheck:
+        return glCheckErrorBool
     #else:
     #    return glNullCheckError
 

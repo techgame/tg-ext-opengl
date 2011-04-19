@@ -20,8 +20,11 @@ noErrorCheck = set([
     'glEnableClientState', 'glDisableClientState',
     ])
 
-mustErrorCheck = set([
+boolErrorCheck = set([
     'glIsEnabled',
+    ])
+
+mustErrorCheck = set([
     'glRenderMode',
     'glDrawArrays', 'glDrawBuffer', 'glDrawElements', 'glDrawRangeElements'
 
