@@ -985,15 +985,24 @@ class Texture(object):
             klass._targetMap_supported = supported
 
             for alias, target in klass.targetMap.items():
-                gl.glIsEnabled(gl.GL_TEXTURE_1D)
+                try: # clear the errors
+                    gl.glIsEnabled(gl.GL_TEXTURE_2D)
+                except glErrors.GLError, e: pass
+
                 try: 
                     gl.glIsEnabled(target)
                 except glErrors.GLError, e: 
+                    try: # clear the errors
+                        gl.glIsEnabled(gl.GL_TEXTURE_2D)
+                    except glErrors.GLError, e: pass
                     continue
 
                 supported[alias] = target
                 supported[target] = target
 
+            print
+            print '  Supported GL Texture Enumerants:', ', '.join(hex(e) for e in set(supported.values()))
+            print
         if targetList is None:
             return supported
 
