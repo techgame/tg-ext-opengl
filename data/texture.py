@@ -629,13 +629,16 @@ class Texture(object):
     wrapS = glTexParamProperty_i(gl.GL_TEXTURE_WRAP_S)
     wrapT = glTexParamProperty_i(gl.GL_TEXTURE_WRAP_T)
     wrapR = glTexParamProperty_i(gl.GL_TEXTURE_WRAP_R)
+    wrapS.name = 'S'; wrapT.name = 'T'; wrapR.name = 'R'
     _wrapGroup = (wrapS, wrapT, wrapR)
 
     def setWrap(self, wrap):
         if not isinstance(wrap, tuple):
             wrap = wrap, wrap, wrap
         for slot, value in zip(self._wrapGroup, wrap[:self.ndim]):
-            slot.set(self, value)
+            try: slot.set(self, value)
+            except glErrors.GLError, glerr:
+                print >> sys.stdout, '%s: %s for name: %r value: 0x%x' % (glerr.__class__.__name__, glerr, slot.name, value)
     wrap = property(fset=setWrap)
 
     magFilter = glTexParamProperty_i(gl.GL_TEXTURE_MAG_FILTER, False)
